@@ -1,0 +1,11 @@
+../Core/Src/protocol_uart.c:61:17:crc16_ccitt_update	4
+../Core/Src/protocol_uart.c:76:6:protocol_init	1
+../Core/Src/protocol_uart.c:84:6:protocol_start_uart_rx	1
+../Core/Src/protocol_uart.c:90:6:HAL_UART_RxCpltCallback	2
+../Core/Src/protocol_uart.c:100:6:protocol_uart_rx_byte	15
+../Core/Src/protocol_uart.c:163:13:handle_message	8
+../Core/Src/protocol_uart.c:237:13:send_frame	5
+../Core/Src/protocol_uart.c:262:6:protocol_send_req	1
+../Core/Src/protocol_uart.c:269:6:protocol_set_idle	2
+../Core/Src/protocol_uart.c:282:6:protocol_send_end	1
+../Core/Src/protocol_uart.c:288:6:protocol_while	7

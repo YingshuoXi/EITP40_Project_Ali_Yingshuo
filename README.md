@@ -19,11 +19,16 @@ connet the ST-link (pin 14, 16) to LPUART (pin A0, A1) as:
 
 # Indication
 LED1 (BLUE) toggle = DATA is being received
+
 LED2 (Green) on = pause
+
 LED3 (RED) on = the program is running
 
+
 SW1 press = shut down the python progress
+
 SW2 press = pause
+
 Sw3 press = continue from pause
 
 Please note that once you press SW1, the python will be terminated and you should manully run it again.

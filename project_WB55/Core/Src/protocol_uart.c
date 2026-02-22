@@ -13,11 +13,12 @@
 #define CODE_START_OF_FRAME_0 0xAA
 #define CODE_START_OF_FRAME_1 0x55
 
-#define CODE_REQUEST_DATA      	0x01
-#define CODE_DATA              	0x02
-#define CODE_ACKNOWLEDGEMENT   	0x03
-#define CODE_FINISH 			0x04
-#define CODE_END    			0x05
+#define CODE_REQUEST_DATA      	0x01	// STM32 -> PC: Request data
+#define CODE_DATA              	0x02	// PC -> STM32: Data
+#define CODE_ACKNOWLEDGEMENT   	0x03	// STM32 -> PC: Acknowledgement
+#define CODE_FINISH 			0x04	// PC -> STM32: Finish (to Idle)
+#define CODE_END    			0x05	// STM32 -> PC: End (Kill Python)
+#define CODE_RESULTS            0x06	// STM32 -> PC: Results
 
 #define EXPECTED_LENGTH (400 + 1)   	// label 1 byte + 50 doubles * 8 bytes
 
@@ -31,8 +32,9 @@ static volatile uint8_t global_flag_pending = 0;  			// 1: something is waiting 
 static volatile uint8_t global_acknowledgement_status = 0;	// 0: everything is good before acknowledgement; 1: there is an error
 static volatile uint16_t global_sequence_number = 0;		// request sequence
 static volatile uint16_t global_ack_sequence_number = 0; 	// acknowledgement sequence
-static volatile uint32_t global_last_req_tick = 0;
+static volatile uint32_t global_last_request_tick = 0;			// Used for periodical request time
 static volatile uint8_t	protocol_idle = 0;					// 1: idle
+static volatile uint8_t protocol_pause_request = 0;  		// 1: stop sending request until training done
 
 // FSM by byte: Start of frame - type - sequence - length - data - crc
 typedef enum {
@@ -50,7 +52,6 @@ static uint8_t  data_type;
 static uint16_t message_sequence;
 static uint16_t message_length;
 static uint16_t message_counter;
-static uint8_t  label;
 static uint8_t  data[EXPECTED_LENGTH];
 static uint16_t crc;
 
@@ -77,7 +78,7 @@ void protocol_init(UART_HandleTypeDef *hlpuart)
 {
     global_hlpuart = hlpuart;
     state = STATE_CODE_START_OF_FRAME_0;
-    global_last_req_tick = HAL_GetTick();
+    global_last_request_tick = HAL_GetTick();
 }
 
 // Ready to receive data
@@ -171,7 +172,7 @@ static void handle_message(void)
 
     // calculate crc
     uint16_t crc_calculated = 0xFFFF;
-    crc_calculated = crc16_ccitt_update(crc_calculated, &header_without_sof, 5);
+    crc_calculated = crc16_ccitt_update(crc_calculated, header_without_sof, 5);
     if (message_length && data) {
     	crc_calculated = crc16_ccitt_update(crc_calculated, data, message_length);
 	}
@@ -208,8 +209,8 @@ static void handle_message(void)
     if (message_sequence == global_sequence_number)		// correct data
     {
         // Expected new packet
-    	label = data[0];
-        save_store_vector(&data[1], EXPECTED_LENGTH - 1);
+    	save_store_sample(data[0], &data[1], EXPECTED_LENGTH - 1);
+        protocol_pause_request = 1;		// Stop and train
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 
         global_acknowledgement_status = 0;
@@ -262,20 +263,28 @@ static void send_frame(uint8_t type, uint16_t sequence, const uint8_t *data, uin
 void protocol_send_req(void)
 {
     send_frame(CODE_REQUEST_DATA, global_sequence_number, NULL, 0);
-    global_last_req_tick = HAL_GetTick();
+    global_last_request_tick = HAL_GetTick();
 }
 
 // Idle state: without doing anything
+
 void protocol_set_idle(uint8_t idle)
 {
-    protocol_idle = idle ? 1 : 0;
-    if (protocol_idle)
-    {
-        global_flag_pending = 0;
-        BSP_LED_On(LED_GREEN);
-    } else{
-    	BSP_LED_Off(LED_GREEN);
+    uint8_t new_idle = idle ? 1 : 0;	// prevent continuously click SW3
+    if (protocol_idle == new_idle) {
+        return;
     }
+    protocol_idle = new_idle;
+
+    if (protocol_idle) {
+        protocol_pause_request = 0;
+        BSP_LED_On(LED_GREEN);
+        return;
+    }
+    protocol_pause_request = 0;
+    global_last_request_tick = 0;
+    protocol_send_req();
+    BSP_LED_Off(LED_GREEN);
 }
 
 // Shut down Python
@@ -284,40 +293,55 @@ void protocol_send_end(void)
     send_frame(CODE_END, global_sequence_number, NULL, 0);
 }
 
+// Send loss
+void protocol_send_results(double loss, double probability, uint8_t correct)
+{
+    uint8_t results[17];
+
+    memcpy(&results[0], &loss, 8);
+    memcpy(&results[8], &probability, 8);
+    results[16] = correct ? 1 : 0;
+
+    send_frame(CODE_RESULTS, global_sequence_number, results, (uint16_t)sizeof(results));
+}
+
 // Used in the while loop (call frequently)
 void protocol_while(void)
 {
-	// Idle: do nothing
-	if (protocol_idle)
-	{
-		global_flag_pending = 0;
-		return;
-	}
-
-	// Periodically Re-send Request if the data does not arrive
-    uint32_t now = HAL_GetTick();
-    if ((uint32_t)(now - global_last_req_tick) >= REQ_WAITING_PERIOD)
+    // check acknowledgement flag
+    if (global_flag_pending)
     {
-        protocol_send_req();
+        uint8_t status = global_acknowledgement_status;
+        uint16_t seq = global_ack_sequence_number;
+
+        send_frame(CODE_ACKNOWLEDGEMENT, seq, &status, 1);
+
+        if (status == 0 && seq == global_sequence_number)	// correct data received
+        {
+            global_sequence_number++;
+        }
+        global_flag_pending = 0;
     }
 
-    // check acknowledgement flag
-    if (!global_flag_pending)
+    // Idle = 1: do nothing
+    if (protocol_idle)
         return;
 
-    uint8_t status = global_acknowledgement_status;
-    uint16_t seq = global_ack_sequence_number;
-
-    send_frame(CODE_ACKNOWLEDGEMENT, seq, &status, 1);
-
-    if (status == 0 && seq == global_sequence_number)	// correct data received
+    // Periodically Re-send Request if the data does not arrive
+    uint32_t now = HAL_GetTick();
+    if (!protocol_pause_request)
     {
-        global_sequence_number++;
-		if (!protocol_idle)			// Request next, if not idle
-		{
-			protocol_send_req();
-		}
-
+        if ((uint32_t)(now - global_last_request_tick) >= REQ_WAITING_PERIOD)
+            protocol_send_req();
     }
-    global_flag_pending = 0;
+}
+
+// Request next sample when training is done
+void protocol_resume_requesting(void)
+{
+    if (protocol_idle)
+    	return;
+
+    protocol_pause_request = 0;
+    protocol_send_req();
 }

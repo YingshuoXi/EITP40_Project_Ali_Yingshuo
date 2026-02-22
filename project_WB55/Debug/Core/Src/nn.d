@@ -1,0 +1,2 @@
+Core/Src/nn.o: ../Core/Src/nn.c ../Core/Inc/nn.h
+../Core/Inc/nn.h:

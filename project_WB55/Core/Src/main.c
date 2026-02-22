@@ -21,7 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <string.h>
 #include "protocol_uart.h"
+#include "save.h"
+#include "nn.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,6 +104,8 @@ int main(void)
   protocol_init(&hlpuart1);
   protocol_start_uart_rx();
   protocol_send_req();
+
+  nn_init(1e-3);
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -133,6 +138,29 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  protocol_while();
+
+	  if (global_sample_ready)
+	  {
+	      double x[50];
+	      int8_t y;
+
+	      // Stop the Interrupt to copy the data safely
+	      __disable_irq();
+	      memcpy(x, global_x, sizeof(x));
+	      y = global_y;
+	      global_sample_ready = 0;
+	      __enable_irq();
+
+	      double loss = nn_train_one(x, y);
+	      double probability = nn_predict(x);
+	      uint8_t pred = (probability >= 0.5) ? 1 : 0;
+	      uint8_t correct = (pred == y) ? 1 : 0;
+
+	      protocol_send_results(loss, probability, correct);
+
+	      protocol_resume_requesting();
+	  }
+
 	  HAL_GPIO_TogglePin(LED3_GPIO_PORT, LED3_PIN);
 
 	  if(sw1_flag){

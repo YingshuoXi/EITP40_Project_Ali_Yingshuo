@@ -25,6 +25,7 @@
 #include "protocol_uart.h"
 #include "save.h"
 #include "nn.h"
+#include "nn_ff.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -105,7 +106,8 @@ int main(void)
   protocol_start_uart_rx();
   protocol_send_req();
 
-  nn_init(1e-3);
+//  nn_init(1e-3);		// Backpropagation
+  nn_ff_init(1e-3);		// Forward-Forward
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -151,8 +153,14 @@ int main(void)
 	      global_sample_ready = 0;
 	      __enable_irq();
 
-	      double loss = nn_train_one(x, y);
-	      double probability = nn_predict(x);
+	      // Backpropagation
+//	      double probability = nn_predict(x);
+//	      double loss = nn_train_one(x, y);
+
+	      // Forward-Forward
+	      double probability = nn_ff_predict(x);
+	      double loss = nn_ff_train_one(x, y);
+
 	      uint8_t pred = (probability >= 0.5) ? 1 : 0;
 	      uint8_t correct = (pred == y) ? 1 : 0;
 

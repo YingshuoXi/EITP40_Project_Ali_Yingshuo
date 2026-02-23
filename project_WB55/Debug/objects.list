@@ -1,5 +1,6 @@
 "./Core/Src/main.o"
 "./Core/Src/nn.o"
+"./Core/Src/nn_ff.o"
 "./Core/Src/protocol_uart.o"
 "./Core/Src/save.o"
 "./Core/Src/stm32wbxx_hal_msp.o"

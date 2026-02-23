@@ -60,21 +60,21 @@ void nn_init(double lr)
     const double lim2 = sqrt(6.0 / H1);
     const double lim3 = sqrt(6.0 / H2);
 
-    for(int i=0;i<H1;i++){			// layer1
+    for(int i=0; i<H1; i++){			// layer1
         b1[i] = 0.0;
-        for(int j=0;j<IN;j++){
+        for(int j=0; j<IN; j++){
             W1[i][j] = kaiming_init(lim1);
         }
     }
 
     for(int i=0;i<H2;i++){
         b2[i] = 0.0;
-        for(int j=0;j<H1;j++){		// layer2
+        for(int j=0; j<H1; j++){		// layer2
             W2[i][j] = kaiming_init(lim2);
         }
     }
 
-    for(int j=0;j<H2;j++){			// layer3
+    for(int j=0; j<H2; j++){			// layer3
         W3[j] = kaiming_init(lim3);
     }
     b3 = 0.0;

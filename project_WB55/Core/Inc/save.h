@@ -8,10 +8,10 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+#include "config.h"
 
 
-
-extern double global_x[50];
+extern double global_x[NN_IN];
 extern volatile int8_t global_y;
 extern volatile uint8_t global_sample_ready;
 

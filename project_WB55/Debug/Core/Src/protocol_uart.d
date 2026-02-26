@@ -1,5 +1,5 @@
 Core/Src/protocol_uart.o: ../Core/Src/protocol_uart.c ../Core/Inc/save.h \
- ../Core/Inc/protocol_uart.h \
+ ../Core/Inc/config.h ../Core/Inc/protocol_uart.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h \
  ../Core/Inc/stm32wbxx_hal_conf.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_dma.h \
@@ -38,6 +38,7 @@ Core/Src/protocol_uart.o: ../Core/Src/protocol_uart.c ../Core/Inc/save.h \
  ../Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo_errno.h \
  ../Core/Inc/stm32wbxx_nucleo_conf.h
 ../Core/Inc/save.h:
+../Core/Inc/config.h:
 ../Core/Inc/protocol_uart.h:
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h:
 ../Core/Inc/stm32wbxx_hal_conf.h:

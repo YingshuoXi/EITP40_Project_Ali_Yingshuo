@@ -9,28 +9,23 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include "config.h"
 
-#define IN  50
-#define H1  20
-#define H2  10
-#define H3 	10
-#define HMAX ((H1 > H2 ? H1 : H2) > H3 ? (H1 > H2 ? H1 : H2) : H3)
+#define HMAX ((NN_FF_H1 > NN_FF_H2 ? NN_FF_H1 : NN_FF_H2) > NN_FF_H3 ? (NN_FF_H1 > NN_FF_H2 ? NN_FF_H1 : NN_FF_H2) : NN_FF_H3)
 
-static double global_lr = 1e-3;
-
-static double theta_1 = H1;
-static double theta_2 = H2;
-static double theta_3 = H3;
+#define THETA_1 NN_FF_H1
+#define THETA_2 NN_FF_H2
+#define THETA_3 NN_FF_H3
 
 // weights and bias, stored in RAM
-static double W1[H1][IN];
-static double b1[H1];
+static double W1[NN_FF_H1][NN_FF_IN];
+static double b1[NN_FF_H1];
 
-static double W2[H2][H1];
-static double b2[H2];
+static double W2[NN_FF_H2][NN_FF_H1];
+static double b2[NN_FF_H2];
 
-static double W3[H3][H2];
-static double b3[H3];
+static double W3[NN_FF_H3][NN_FF_H2];
+static double b3[NN_FF_H3];
 
 
 
@@ -59,81 +54,79 @@ static inline double kaiming_init(double limit)
     double u = (double)rand() / (double)RAND_MAX;  // [0,1]
     return (u * 2.0 - 1.0) * limit;                // [-limit, limit]
 }
-void nn_ff_init(double lr)
+void nn_ff_init(void)
 {
-    global_lr = lr;
+    const double lim1 = sqrt(6.0 / NN_FF_IN);
+    const double lim2 = sqrt(6.0 / NN_FF_H1);
+    const double lim3 = sqrt(6.0 / NN_FF_H2);
 
-    const double lim1 = sqrt(6.0 / IN);
-    const double lim2 = sqrt(6.0 / H1);
-    const double lim3 = sqrt(6.0 / H2);
-
-    for(int i=0; i<H1; i++){			// layer1
+    for(int i=0; i<NN_FF_H1; i++){			// layer1
         b1[i] = 0.0;
-        for(int j=0; j<IN; j++){
+        for(int j=0; j<NN_FF_IN; j++){
             W1[i][j] = kaiming_init(lim1);
         }
     }
 
-    for(int i=0;i<H2;i++){
+    for(int i=0;i<NN_FF_H2;i++){
         b2[i] = 0.0;
-        for(int j=0; j<H1; j++){		// layer2
+        for(int j=0; j<NN_FF_H1; j++){		// layer2
             W2[i][j] = kaiming_init(lim2);
         }
     }
 
-    for(int i=0; i<H3; i++){           // layer3
+    for(int i=0; i<NN_FF_H3; i++){           // layer3
         b3[i] = 0.0;
-        for(int j=0; j<H2; j++){
+        for(int j=0; j<NN_FF_H2; j++){
             W3[i][j] = kaiming_init(lim3);
         }
     }
 }
 
-double nn_ff_predict(const double x[50])
+double nn_ff_predict(const double x[NN_FF_IN])
 {
 
-    double after_act_1[H1];
-	double after_act_2[H2];
-	double after_act_3[H3];
+    double after_act_1[NN_FF_H1];
+	double after_act_2[NN_FF_H2];
+	double after_act_3[NN_FF_H3];
 	double tmp;
 
-    for(int i=0; i<H1; i++){		// layer1
+    for(int i=0; i<NN_FF_H1; i++){		// layer1
 		tmp = b1[i];
-		for(int j=0; j<IN; j++)
+		for(int j=0; j<NN_FF_IN; j++)
 			tmp += W1[i][j] * x[j];
 		after_act_1[i] = relu(tmp);
     }
 
-    for(int i=0; i<H2; i++){		// layer2
+    for(int i=0; i<NN_FF_H2; i++){		// layer2
         tmp = b2[i];
-        for(int j=0; j<H1; j++)
+        for(int j=0; j<NN_FF_H1; j++)
         	tmp += W2[i][j] * after_act_1[j];
         after_act_2[i] = relu(tmp);
     }
-    for(int i=0; i<H3; i++){		// layer3
+    for(int i=0; i<NN_FF_H3; i++){		// layer3
 		tmp = b3[i];
-		for(int j=0; j<H2; j++)
+		for(int j=0; j<NN_FF_H2; j++)
 			tmp += W3[i][j] * after_act_2[j];
 		after_act_3[i] = relu(tmp);
 	}
 
     // Goodness
     double goodness_1 = 0.0, goodness_2 = 0.0, goodness_3 = 0.0;
-	for(int i=0; i<H1; i++)		// layer1
+	for(int i=0; i<NN_FF_H1; i++)		// layer1
 		goodness_1 += after_act_1[i] * after_act_1[i];
-	for(int i=0; i<H2; i++)		// layer2
+	for(int i=0; i<NN_FF_H2; i++)		// layer2
 		goodness_2 += after_act_2[i] * after_act_2[i];
-	for(int i=0; i<H3; i++)	// layer3
+	for(int i=0; i<NN_FF_H3; i++)	// layer3
 		goodness_3 += after_act_3[i] * after_act_3[i];
 
 	// Probability
 	double GOODNESS = goodness_1 + goodness_2 + goodness_3;
-	double THETA = theta_1 + theta_2 + theta_3;
+	double THETA = THETA_1 + THETA_2 + THETA_3;
 
 	return sigmoid(GOODNESS - THETA);
 }
 
-double nn_ff_train_one(const double x[50], int8_t y_int8)
+double nn_ff_train_one(const double x[NN_FF_IN], int8_t y_int8)
 {
     int y_int = (y_int8 != 0) ? 1 : 0;
     double loss_sum = 0.0, dL_dg;
@@ -143,19 +136,19 @@ double nn_ff_train_one(const double x[50], int8_t y_int8)
     double tmp;
 
     // Layer1
-	for(int i=0; i<H1; i++){			// Forward
+	for(int i=0; i<NN_FF_H1; i++){			// Forward
 		tmp = b1[i];
-		for(int j=0; j<IN; j++)
+		for(int j=0; j<NN_FF_IN; j++)
 			tmp += W1[i][j] * x[j];
 		before_act[i] = tmp;
 		after_act[i] = relu(tmp);
 	}
 
 	double goodness_1 = 0.0;			// Goodness
-	for(int i=0; i<H1; i++)
+	for(int i=0; i<NN_FF_H1; i++)
 		goodness_1 += after_act[i]*after_act[i];
 
-	tmp = y_int ? (theta_1 - goodness_1) : (goodness_1 - theta_1);
+	tmp = y_int ? (THETA_1 - goodness_1) : (goodness_1 - THETA_1);
 	double loss_1;
 	if(tmp > 11.9 - 6.9) // B-day :)
 		loss_1 = tmp;
@@ -164,38 +157,38 @@ double nn_ff_train_one(const double x[50], int8_t y_int8)
 	else loss_1 = log(1.0 + exp(tmp));
 	loss_sum += loss_1;
 
-	dL_dg = y_int ? (-sigmoid(theta_1 - goodness_1)) : (sigmoid(goodness_1 - theta_1));
+	dL_dg = y_int ? (-sigmoid(THETA_1 - goodness_1)) : (sigmoid(goodness_1 - THETA_1));
 
-    for(int i=0; i<H1; i++){			// Update
+    for(int i=0; i<NN_FF_H1; i++){			// Update
         tmp = dL_dg * (2.0 * after_act[i]) * relu_grad(before_act[i]);
-        b1[i] -= global_lr * tmp;
-        for(int j=0; j<IN; j++){
-            W1[i][j] -= global_lr * (tmp * x[j]);
+        b1[i] -= NN_LR_FF * tmp;
+        for(int j=0; j<NN_FF_IN; j++){
+            W1[i][j] -= NN_LR_FF * (tmp * x[j]);
         }
     }
 
-    for(int i=0; i<H1; i++){			// Forward again
+    for(int i=0; i<NN_FF_H1; i++){			// Forward again
     	tmp = b1[i];
-        for(int j=0; j <IN; j++)
+        for(int j=0; j <NN_FF_IN; j++)
         	tmp += W1[i][j] * x[j];
         input_next[i] = relu(tmp);
     }
 
 
     // Layer2
-	for(int i=0; i<H2; i++){			// Forward
+	for(int i=0; i<NN_FF_H2; i++){			// Forward
 		tmp = b2[i];
-		for(int j=0; j<H1; j++)
+		for(int j=0; j<NN_FF_H1; j++)
 			tmp += W2[i][j] * input_next[j];
 		before_act[i] = tmp;
 		after_act[i] = relu(tmp);
 	}
 
 	double goodness_2 = 0.0;			// Goodness
-	for(int i=0; i<H2; i++)
+	for(int i=0; i<NN_FF_H2; i++)
 		goodness_2 += after_act[i]*after_act[i];
 
-	tmp = y_int ? (theta_2 - goodness_2) : (goodness_2 - theta_2);
+	tmp = y_int ? (THETA_2 - goodness_2) : (goodness_2 - THETA_2);
 	double loss_2;
 	if(tmp > 11.9 - 6.9)
 		loss_2 = tmp;
@@ -204,40 +197,40 @@ double nn_ff_train_one(const double x[50], int8_t y_int8)
 	else loss_2 = log(1.0 + exp(tmp));
 	loss_sum += loss_2;
 
-	dL_dg = y_int ? (-sigmoid(theta_2 - goodness_2)) : (sigmoid(goodness_2 - theta_2));
+	dL_dg = y_int ? (-sigmoid(THETA_2 - goodness_2)) : (sigmoid(goodness_2 - THETA_2));
 
-	for(int i=0; i<H2; i++){			// Update
+	for(int i=0; i<NN_FF_H2; i++){			// Update
 		tmp = dL_dg * (2.0 * after_act[i]) * relu_grad(before_act[i]);
-		b2[i] -= global_lr * tmp;
-		for(int j=0; j<H1; j++){
-			W2[i][j] -= global_lr * (tmp * input_next[j]);
+		b2[i] -= NN_LR_FF * tmp;
+		for(int j=0; j<NN_FF_H1; j++){
+			W2[i][j] -= NN_LR_FF * (tmp * input_next[j]);
 		}
 	}
 
-	for(int i=0; i<H2; i++){			// Forward again
+	for(int i=0; i<NN_FF_H2; i++){			// Forward again
 		tmp = b2[i];
-		for(int j=0; j <H1; j++)
+		for(int j=0; j <NN_FF_H1; j++)
 			tmp += W2[i][j] * input_next[j];
 		after_act[i] = relu(tmp);
 	}
-	for(int i=0; i<H2; i++){
+	for(int i=0; i<NN_FF_H2; i++){
 		input_next[i] = after_act[i];
 	}
 
 	// Layer3
-	for(int i=0; i<H3; i++){			// Forward
+	for(int i=0; i<NN_FF_H3; i++){			// Forward
 		tmp = b3[i];
-		for(int j=0; j<H2; j++)
+		for(int j=0; j<NN_FF_H2; j++)
 			tmp += W3[i][j] * input_next[j];
 		before_act[i] = tmp;
 		after_act[i] = relu(tmp);
 	}
 
 	double goodness_3 = 0.0;			// Goodness
-	for(int i=0; i<H3; i++)
+	for(int i=0; i<NN_FF_H3; i++)
 		goodness_3 += after_act[i]*after_act[i];
 
-	tmp = y_int ? (theta_3 - goodness_3) : (goodness_3 - theta_3);
+	tmp = y_int ? (THETA_3 - goodness_3) : (goodness_3 - THETA_3);
 	double loss_3;
 	if(tmp > 11.9 - 6.9)
 		loss_3 = tmp;
@@ -246,13 +239,13 @@ double nn_ff_train_one(const double x[50], int8_t y_int8)
 	else loss_3 = log(1.0 + exp(tmp));
 	loss_sum += loss_3;
 
-	dL_dg = y_int ? (-sigmoid(theta_3 - goodness_3)) : (sigmoid(goodness_3 - theta_3));
+	dL_dg = y_int ? (-sigmoid(THETA_3 - goodness_3)) : (sigmoid(goodness_3 - THETA_3));
 
-	for(int i=0; i<H3; i++){			// Update
+	for(int i=0; i<NN_FF_H3; i++){			// Update
 		tmp = dL_dg * (2.0 * after_act[i]) * relu_grad(before_act[i]);
-		b3[i] -= global_lr * tmp;
-		for(int j=0; j<H2; j++){
-			W3[i][j] -= global_lr * (tmp * input_next[j]);
+		b3[i] -= NN_LR_FF * tmp;
+		for(int j=0; j<NN_FF_H2; j++){
+			W3[i][j] -= NN_LR_FF * (tmp * input_next[j]);
 		}
 	}
 

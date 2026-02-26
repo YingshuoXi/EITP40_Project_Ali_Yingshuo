@@ -1,7 +1,7 @@
-../Core/Src/nn_ff.c:37:22:relu	16	static
-../Core/Src/nn_ff.c:41:22:relu_grad	16	static
-../Core/Src/nn_ff.c:46:22:sigmoid	40	static
-../Core/Src/nn_ff.c:57:22:kaiming_init	24	static
-../Core/Src/nn_ff.c:62:6:nn_ff_init	64	static
-../Core/Src/nn_ff.c:92:8:nn_ff_predict	424	static
-../Core/Src/nn_ff.c:136:8:nn_ff_train_one	704	static
+../Core/Src/nn_ff.c:32:22:relu	16	static
+../Core/Src/nn_ff.c:36:22:relu_grad	16	static
+../Core/Src/nn_ff.c:41:22:sigmoid	40	static
+../Core/Src/nn_ff.c:52:22:kaiming_init	24	static
+../Core/Src/nn_ff.c:57:6:nn_ff_init	56	static
+../Core/Src/nn_ff.c:85:8:nn_ff_predict	344	static
+../Core/Src/nn_ff.c:129:8:nn_ff_train_one	704	static

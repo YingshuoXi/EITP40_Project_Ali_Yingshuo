@@ -9,6 +9,7 @@
 #include "protocol_uart.h"
 #include "stm32wbxx_nucleo.h"
 #include <string.h>
+#include "config.h"
 
 #define CODE_START_OF_FRAME_0 0xAA
 #define CODE_START_OF_FRAME_1 0x55
@@ -20,7 +21,7 @@
 #define CODE_END    			0x05	// STM32 -> PC: End (Kill Python)
 #define CODE_RESULTS            0x06	// STM32 -> PC: Results
 
-#define EXPECTED_LENGTH (400 + 1)   	// label 1 byte + 50 doubles * 8 bytes
+#define EXPECTED_LENGTH (8 * NN_FF_IN + 1)   	// label 1 byte + 80 doubles * 8 bytes
 
 // Waiting time before sending new request
 #define REQ_WAITING_PERIOD 20u

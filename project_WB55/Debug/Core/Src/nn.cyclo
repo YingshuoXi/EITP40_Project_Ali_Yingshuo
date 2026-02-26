@@ -1,7 +1,7 @@
-../Core/Src/nn.c:30:22:relu	2
-../Core/Src/nn.c:34:22:relu_grad	2
-../Core/Src/nn.c:39:22:sigmoid	2
-../Core/Src/nn.c:50:22:kaiming_init	1
-../Core/Src/nn.c:55:6:nn_init	6
-../Core/Src/nn.c:83:8:nn_predict	6
-../Core/Src/nn.c:107:8:nn_train_one	15
+../Core/Src/nn.c:24:22:relu	2
+../Core/Src/nn.c:28:22:relu_grad	2
+../Core/Src/nn.c:33:22:sigmoid	2
+../Core/Src/nn.c:44:22:kaiming_init	1
+../Core/Src/nn.c:49:6:nn_init	6
+../Core/Src/nn.c:75:8:nn_predict	6
+../Core/Src/nn.c:99:8:nn_train_one	15

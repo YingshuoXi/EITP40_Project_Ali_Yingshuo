@@ -1,0 +1,9 @@
+../Core/Src/weights_flash.c:42:17:crc32_simple	32	static
+../Core/Src/weights_flash.c:60:17:flash_page_from_addr	16	static
+../Core/Src/weights_flash.c:65:17:model_state_size	8	static
+../Core/Src/weights_flash.c:76:13:model_state_export	16	static
+../Core/Src/weights_flash.c:87:16:model_state_import	16	static
+../Core/Src/weights_flash.c:100:9:weights_flash_save	96	static
+../Core/Src/weights_flash.c:187:9:weights_flash_load	32	static
+../Core/Src/weights_flash.c:221:6:weights_flash_set_infer_acc	16	static
+../Core/Src/weights_flash.c:226:7:weights_flash_get_infer_acc	4	static

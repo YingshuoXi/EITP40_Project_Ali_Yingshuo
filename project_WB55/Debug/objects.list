@@ -8,6 +8,7 @@
 "./Core/Src/syscalls.o"
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32wbxx.o"
+"./Core/Src/weights_flash.o"
 "./Core/Startup/startup_stm32wb55rgvx.o"
 "./Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.o"
 "./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.o"

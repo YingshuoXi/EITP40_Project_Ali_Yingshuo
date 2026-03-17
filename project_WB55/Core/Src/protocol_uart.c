@@ -6,6 +6,7 @@
  */
 
 #include <save.h>
+#include "main.h"
 #include "protocol_uart.h"
 #include "stm32wbxx_nucleo.h"
 #include <string.h>
@@ -17,14 +18,25 @@
 #define CODE_REQUEST_DATA      	0x01	// STM32 -> PC: Request data
 #define CODE_DATA              	0x02	// PC -> STM32: Data
 #define CODE_ACKNOWLEDGEMENT   	0x03	// STM32 -> PC: Acknowledgement
-#define CODE_FINISH 			0x04	// PC -> STM32: Finish (to Idle)
+#define CODE_FINISH 			0x04	// PC -> STM32: Finish
 #define CODE_END    			0x05	// STM32 -> PC: End (Kill Python)
-#define CODE_RESULTS            0x06	// STM32 -> PC: Results
+#define CODE_RESULTS_TRAIN      0x06	// STM32 -> PC: Results
+#define CODE_REQUEST_VAL   		0x07   	// STM32 -> PC: Request val data
+#define CODE_VAL_ACC       		0x08   	// STM32 -> PC: Inference Accuracy
+#define CODE_REQUEST_TEST      	0x09	// STM32 -> PC: Request test data
+#define CODE_TEST_PRED        	0x0A	// STM32 -> PC: Inference Accuracy
 
-#define EXPECTED_LENGTH (8 * NN_FF_IN + 1)   	// label 1 byte + 80 doubles * 8 bytes
+// label 1 byte + 80 float * 4 bytes
+#if USE_BACKPROP
+#define EXPECTED_LENGTH (4 * NN_IN + 1)
+#elif USE_FF
+#define EXPECTED_LENGTH (4 * NN_FF_IN + 1)
+#else
+#error "No model selected"
+#endif
 
 // Waiting time before sending new request
-#define REQ_WAITING_PERIOD 20u
+#define REQ_WAITING_PERIOD 200u
 
 static UART_HandleTypeDef *global_hlpuart;
 static uint8_t global_rx_byte;
@@ -33,9 +45,45 @@ static volatile uint8_t global_flag_pending = 0;  			// 1: something is waiting 
 static volatile uint8_t global_acknowledgement_status = 0;	// 0: everything is good before acknowledgement; 1: there is an error
 static volatile uint16_t global_sequence_number = 0;		// request sequence
 static volatile uint16_t global_ack_sequence_number = 0; 	// acknowledgement sequence
-static volatile uint32_t global_last_request_tick = 0;			// Used for periodical request time
+static volatile uint16_t global_current_data_sequence = 0;	// current data
+static volatile uint32_t global_last_request_tick = 0;		// Used for periodical request time
 static volatile uint8_t	protocol_idle = 0;					// 1: idle
 static volatile uint8_t protocol_pause_request = 0;  		// 1: stop sending request until training done
+static volatile uint8_t protocol_infer_finished = 0;
+static volatile uint8_t protocol_train_finished = 0;
+static volatile uint8_t protocol_test_finished = 0;
+static uint32_t current_epoch = 0;
+
+uint8_t protocol_is_infer_finished(void)
+{
+    return protocol_infer_finished;
+}
+
+void protocol_clear_infer_finished(void)
+{
+    protocol_infer_finished = 0;
+}
+
+uint8_t protocol_is_train_finished(void)
+{
+    return protocol_train_finished;
+}
+
+void protocol_clear_train_finished(void)
+{
+    protocol_train_finished = 0;
+}
+
+typedef enum {
+    PROTOCOL_MODE_TRAIN = 0,
+    PROTOCOL_MODE_VAL   = 1,
+    PROTOCOL_MODE_TEST  = 2
+} protocol_mode_t;
+#if (NN_EPOCHS == 0)
+static volatile protocol_mode_t protocol_mode = PROTOCOL_MODE_TEST;
+#else
+static volatile protocol_mode_t protocol_mode = PROTOCOL_MODE_TRAIN;
+#endif
 
 // FSM by byte: Start of frame - type - sequence - length - data - crc
 typedef enum {
@@ -79,6 +127,25 @@ void protocol_init(UART_HandleTypeDef *hlpuart)
 {
     global_hlpuart = hlpuart;
     state = STATE_CODE_START_OF_FRAME_0;
+
+    global_flag_pending = 0;
+    global_acknowledgement_status = 0;
+    global_sequence_number = 0;
+    global_ack_sequence_number = 0;
+    global_current_data_sequence = 0;
+    protocol_idle = 0;
+    protocol_pause_request = 0;
+    protocol_infer_finished = 0;
+    protocol_train_finished = 0;
+    protocol_test_finished = 0;
+    current_epoch = 0;
+
+#if (NN_EPOCHS == 0)
+    protocol_mode = PROTOCOL_MODE_TEST;
+#else
+    protocol_mode = PROTOCOL_MODE_TRAIN;
+#endif
+
     global_last_request_tick = HAL_GetTick();
 }
 
@@ -189,7 +256,23 @@ static void handle_message(void)
 
     if (data_type == CODE_FINISH)
     {
-    	protocol_set_idle(1);
+        if (protocol_mode == PROTOCOL_MODE_TRAIN)
+        {
+            protocol_train_finished = 1;
+            protocol_mode = PROTOCOL_MODE_VAL;
+            global_sequence_number = 0;
+            protocol_pause_request = 0;
+            global_last_request_tick = 0;
+            protocol_send_infer_req();
+        }
+        else if (protocol_mode == PROTOCOL_MODE_VAL)
+        {
+            protocol_infer_finished = 1;
+        }
+        else if (protocol_mode == PROTOCOL_MODE_TEST)
+        {
+            protocol_test_finished = 1;
+        }
         return;
     }
 
@@ -209,6 +292,8 @@ static void handle_message(void)
     // Sequence check
     if (message_sequence == global_sequence_number)		// correct data
     {
+    	global_current_data_sequence = message_sequence;
+
         // Expected new packet
     	save_store_sample(data[0], &data[1], EXPECTED_LENGTH - 1);
         protocol_pause_request = 1;		// Stop and train
@@ -279,31 +364,31 @@ void protocol_set_idle(uint8_t idle)
 
     if (protocol_idle) {
         protocol_pause_request = 0;
-        BSP_LED_On(LED_GREEN);
+//        BSP_LED_On(LED_GREEN);
         return;
     }
     protocol_pause_request = 0;
     global_last_request_tick = 0;
     protocol_send_req();
-    BSP_LED_Off(LED_GREEN);
+//    BSP_LED_Off(LED_GREEN);
 }
 
 // Shut down Python
 void protocol_send_end(void)
 {
-    send_frame(CODE_END, global_sequence_number, NULL, 0);
+    send_frame(CODE_END, 0xFFFF, NULL, 0);
 }
 
 // Send loss
-void protocol_send_results(double loss, double probability, uint8_t correct)
+void protocol_send_results(float loss, float probability, uint8_t correct)
 {
-    uint8_t results[17];
+    uint8_t results[9];
 
-    memcpy(&results[0], &loss, 8);
-    memcpy(&results[8], &probability, 8);
-    results[16] = correct ? 1 : 0;
+    memcpy(&results[0], &loss, 4);
+    memcpy(&results[4], &probability, 4);
+    results[8] = correct ? 1 : 0;
 
-    send_frame(CODE_RESULTS, global_sequence_number, results, (uint16_t)sizeof(results));
+    send_frame(CODE_RESULTS_TRAIN, global_sequence_number, results, (uint16_t)sizeof(results));
 }
 
 // Used in the while loop (call frequently)
@@ -333,7 +418,14 @@ void protocol_while(void)
     if (!protocol_pause_request)
     {
         if ((uint32_t)(now - global_last_request_tick) >= REQ_WAITING_PERIOD)
-            protocol_send_req();
+        {
+            if (protocol_mode == PROTOCOL_MODE_TRAIN)
+                protocol_send_req();
+            else if (protocol_mode == PROTOCOL_MODE_VAL)
+                protocol_send_infer_req();
+            else
+                protocol_send_test_req();
+        }
     }
 }
 
@@ -341,8 +433,96 @@ void protocol_while(void)
 void protocol_resume_requesting(void)
 {
     if (protocol_idle)
-    	return;
+        return;
 
     protocol_pause_request = 0;
-    protocol_send_req();
+
+    if (protocol_mode == PROTOCOL_MODE_TRAIN)
+        protocol_send_req();
+    else if (protocol_mode == PROTOCOL_MODE_VAL)
+        protocol_send_infer_req();
+    else
+        protocol_send_test_req();
 }
+
+void protocol_send_infer_req(void)
+{
+    send_frame(CODE_REQUEST_VAL, global_sequence_number, NULL, 0);
+    global_last_request_tick = HAL_GetTick();
+}
+
+uint8_t protocol_is_inference_mode(void)
+{
+    return (protocol_mode == PROTOCOL_MODE_VAL) ? 1 : 0;
+}
+
+void protocol_send_inference_acc(float acc)
+{
+    uint8_t payload[4];
+    memcpy(payload, &acc, 4);
+    send_frame(CODE_VAL_ACC, global_sequence_number, payload, 4);
+}
+
+void protocol_after_infer_processed(void)
+{
+    current_epoch++;
+
+    if (current_epoch < NN_EPOCHS)
+    {
+        protocol_mode = PROTOCOL_MODE_TRAIN;
+        global_sequence_number = 0;
+        protocol_pause_request = 0;
+        global_last_request_tick = 0;
+        protocol_send_req();
+    }
+    else
+    {
+		#if NN_SAVE_NEW_WEIGHTS_AFTER_TRAIN
+            (void)weights_flash_load();
+        #endif
+
+        protocol_mode = PROTOCOL_MODE_TEST;
+        global_sequence_number = 0;
+        protocol_pause_request = 0;
+        global_last_request_tick = 0;
+        protocol_send_test_req();
+    }
+}
+
+uint8_t protocol_is_test_finished(void)
+{
+    return protocol_test_finished;
+}
+
+void protocol_clear_test_finished(void)
+{
+    protocol_test_finished = 0;
+}
+
+uint8_t protocol_is_test_mode(void)
+{
+    return (protocol_mode == PROTOCOL_MODE_TEST) ? 1 : 0;
+}
+
+void protocol_send_test_req(void)
+{
+    send_frame(CODE_REQUEST_TEST, global_sequence_number, NULL, 0);
+    global_last_request_tick = HAL_GetTick();
+}
+
+void protocol_send_test_prediction(float probability, uint8_t pred)
+{
+    uint8_t payload[5];
+    memcpy(&payload[0], &probability, 4);
+    payload[4] = pred ? 1 : 0;
+
+    send_frame(CODE_TEST_PRED, global_current_data_sequence, payload, 5);
+}
+
+void protocol_after_test_processed(void)
+{
+//    protocol_send_end();
+    protocol_set_idle(1);
+}
+
+

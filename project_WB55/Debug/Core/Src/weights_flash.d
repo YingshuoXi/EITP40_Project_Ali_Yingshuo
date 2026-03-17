@@ -1,4 +1,5 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
+Core/Src/weights_flash.o: ../Core/Src/weights_flash.c \
+ ../Core/Inc/weights_flash.h ../Core/Inc/config.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h \
  ../Core/Inc/stm32wbxx_hal_conf.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_dma.h \
@@ -33,12 +34,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart_ex.h \
  ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_system.h \
- ../Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.h \
- ../Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo_errno.h \
- ../Core/Inc/stm32wbxx_nucleo_conf.h ../Core/Inc/protocol_uart.h \
- ../Core/Inc/save.h ../Core/Inc/config.h ../Core/Inc/nn.h \
- ../Core/Inc/nn_ff.h ../Core/Inc/weights_flash.h
-../Core/Inc/main.h:
+ ../Core/Inc/nn.h
+../Core/Inc/weights_flash.h:
+../Core/Inc/config.h:
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal.h:
 ../Core/Inc/stm32wbxx_hal_conf.h:
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_dma.h:
@@ -73,12 +71,4 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart.h:
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_hal_uart_ex.h:
 ../Drivers/STM32WBxx_HAL_Driver/Inc/stm32wbxx_ll_system.h:
-../Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo.h:
-../Drivers/BSP/P-NUCLEO-WB55.Nucleo/stm32wbxx_nucleo_errno.h:
-../Core/Inc/stm32wbxx_nucleo_conf.h:
-../Core/Inc/protocol_uart.h:
-../Core/Inc/save.h:
-../Core/Inc/config.h:
 ../Core/Inc/nn.h:
-../Core/Inc/nn_ff.h:
-../Core/Inc/weights_flash.h:

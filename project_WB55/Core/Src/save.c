@@ -10,7 +10,7 @@
 #include "config.h"
 
 
-double global_x[NN_IN];
+float global_x[NN_IN];
 volatile int8_t global_y = 0;
 volatile uint8_t global_sample_ready = 0;
 

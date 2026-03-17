@@ -18,4 +18,21 @@ void protocol_resume_requesting(void);  		// Request next sample when training i
 
 void protocol_send_req(void);              		// Send request
 void protocol_send_end(void);					// Stop Python code
-void protocol_send_results(double loss, double p, uint8_t correct);	// Send Results
+void protocol_send_results(float loss, float p, uint8_t correct);	// Send Results
+void protocol_send_infer_req(void);				// Send request for inference
+void protocol_send_inference_acc(float acc);	// Send inference acc
+uint8_t protocol_is_inference_mode(void);		// Inference mode setting
+
+uint8_t protocol_is_train_finished(void);
+void protocol_clear_train_finished(void);
+uint8_t protocol_is_infer_finished(void);
+void protocol_clear_infer_finished(void);
+void protocol_after_infer_processed(void);
+
+void protocol_send_test_req(void);
+void protocol_send_test_prediction(float probability, uint8_t pred);
+uint8_t protocol_is_test_mode(void);
+
+uint8_t protocol_is_test_finished(void);
+void protocol_clear_test_finished(void);
+void protocol_after_test_processed(void);

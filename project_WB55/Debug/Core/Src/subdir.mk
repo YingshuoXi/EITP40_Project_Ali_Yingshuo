@@ -14,7 +14,8 @@ C_SRCS += \
 ../Core/Src/stm32wbxx_it.c \
 ../Core/Src/syscalls.c \
 ../Core/Src/sysmem.c \
-../Core/Src/system_stm32wbxx.c 
+../Core/Src/system_stm32wbxx.c \
+../Core/Src/weights_flash.c 
 
 OBJS += \
 ./Core/Src/main.o \
@@ -26,7 +27,8 @@ OBJS += \
 ./Core/Src/stm32wbxx_it.o \
 ./Core/Src/syscalls.o \
 ./Core/Src/sysmem.o \
-./Core/Src/system_stm32wbxx.o 
+./Core/Src/system_stm32wbxx.o \
+./Core/Src/weights_flash.o 
 
 C_DEPS += \
 ./Core/Src/main.d \
@@ -38,7 +40,8 @@ C_DEPS += \
 ./Core/Src/stm32wbxx_it.d \
 ./Core/Src/syscalls.d \
 ./Core/Src/sysmem.d \
-./Core/Src/system_stm32wbxx.d 
+./Core/Src/system_stm32wbxx.d \
+./Core/Src/weights_flash.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -48,7 +51,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/nn.cyclo ./Core/Src/nn.d ./Core/Src/nn.o ./Core/Src/nn.su ./Core/Src/nn_ff.cyclo ./Core/Src/nn_ff.d ./Core/Src/nn_ff.o ./Core/Src/nn_ff.su ./Core/Src/protocol_uart.cyclo ./Core/Src/protocol_uart.d ./Core/Src/protocol_uart.o ./Core/Src/protocol_uart.su ./Core/Src/save.cyclo ./Core/Src/save.d ./Core/Src/save.o ./Core/Src/save.su ./Core/Src/stm32wbxx_hal_msp.cyclo ./Core/Src/stm32wbxx_hal_msp.d ./Core/Src/stm32wbxx_hal_msp.o ./Core/Src/stm32wbxx_hal_msp.su ./Core/Src/stm32wbxx_it.cyclo ./Core/Src/stm32wbxx_it.d ./Core/Src/stm32wbxx_it.o ./Core/Src/stm32wbxx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32wbxx.cyclo ./Core/Src/system_stm32wbxx.d ./Core/Src/system_stm32wbxx.o ./Core/Src/system_stm32wbxx.su
+	-$(RM) ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/nn.cyclo ./Core/Src/nn.d ./Core/Src/nn.o ./Core/Src/nn.su ./Core/Src/nn_ff.cyclo ./Core/Src/nn_ff.d ./Core/Src/nn_ff.o ./Core/Src/nn_ff.su ./Core/Src/protocol_uart.cyclo ./Core/Src/protocol_uart.d ./Core/Src/protocol_uart.o ./Core/Src/protocol_uart.su ./Core/Src/save.cyclo ./Core/Src/save.d ./Core/Src/save.o ./Core/Src/save.su ./Core/Src/stm32wbxx_hal_msp.cyclo ./Core/Src/stm32wbxx_hal_msp.d ./Core/Src/stm32wbxx_hal_msp.o ./Core/Src/stm32wbxx_hal_msp.su ./Core/Src/stm32wbxx_it.cyclo ./Core/Src/stm32wbxx_it.d ./Core/Src/stm32wbxx_it.o ./Core/Src/stm32wbxx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32wbxx.cyclo ./Core/Src/system_stm32wbxx.d ./Core/Src/system_stm32wbxx.o ./Core/Src/system_stm32wbxx.su ./Core/Src/weights_flash.cyclo ./Core/Src/weights_flash.d ./Core/Src/weights_flash.o ./Core/Src/weights_flash.su
 
 .PHONY: clean-Core-2f-Src
 

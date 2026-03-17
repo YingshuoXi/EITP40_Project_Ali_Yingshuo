@@ -11,7 +11,7 @@
 #include "config.h"
 
 
-extern double global_x[NN_IN];
+extern float global_x[NN_IN];
 extern volatile int8_t global_y;
 extern volatile uint8_t global_sample_ready;
 

@@ -27,6 +27,7 @@
 #include "nn.h"
 #include "nn_ff.h"
 #include "config.h"
+#include "weights_flash.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,6 +54,12 @@ UART_HandleTypeDef hlpuart1;
 volatile uint8_t sw1_flag = 0;
 volatile uint8_t sw2_flag = 0;
 volatile uint8_t sw3_flag = 0;
+
+static uint32_t infer_correct = 0;
+static uint32_t infer_total = 0;
+
+static uint32_t test_total = 0;
+static uint32_t test_correct = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,15 +112,23 @@ int main(void)
   /* USER CODE BEGIN 2 */
   protocol_init(&hlpuart1);
   protocol_start_uart_rx();
-  protocol_send_req();
-
 
   #if USE_BACKPROP
-  	  nn_init();
+	  nn_init();
   #endif
 
   #if USE_FF
-  	  nn_ff_init();
+	  nn_ff_init();
+  #endif
+
+  #if NN_LOAD_OLD_WEIGHTS_AT_BOOT
+	  (void)weights_flash_load();
+  #endif
+
+  #if (NN_EPOCHS == 0)
+      protocol_send_test_req();
+  #else
+      protocol_send_req();
   #endif
   /* USER CODE END 2 */
 
@@ -148,37 +163,133 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  protocol_while();
 
-	  if (global_sample_ready)
+	  if (protocol_is_train_finished())
 	  {
-	      double x[NN_IN];
-	      int8_t y;
-
-	      // Stop the Interrupt to copy the data safely
-	      __disable_irq();
-	      memcpy(x, global_x, sizeof(x));
-	      y = global_y;
-	      global_sample_ready = 0;
-	      __enable_irq();
-
-		  #if USE_BACKPROP
-	      	  double loss = nn_train_one(x, y);
-			  double probability = nn_predict(x);
-		  #endif
-
-		  #if USE_FF
-			  double loss = nn_ff_train_one(x, y);
-			  double probability = nn_ff_predict(x);
-		  #endif
-
-	      uint8_t pred = (probability >= 0.5) ? 1 : 0;
-	      uint8_t correct = (pred == y) ? 1 : 0;
-
-	      protocol_send_results(loss, probability, correct);
-
-	      protocol_resume_requesting();
+		  protocol_clear_train_finished();
 	  }
 
-	  HAL_GPIO_TogglePin(LED3_GPIO_PORT, LED3_PIN);
+	  if (global_sample_ready)
+	  {
+		  float x[NN_IN];
+		  int8_t y;
+
+		  // Stop the Interrupt to copy the data safely
+		  __disable_irq();
+		  memcpy(x, global_x, sizeof(x));
+		  y = global_y;
+		  global_sample_ready = 0;
+		  __enable_irq();
+
+		  float probability = 0.0f;
+		  float loss = 0.0f;
+
+		  // Train
+		  if (!protocol_is_inference_mode() && !protocol_is_test_mode())
+		  {
+			  #if USE_BACKPROP
+				  loss = nn_train_one(x, y);
+				  probability = nn_predict(x);
+			  #endif
+
+			  #if USE_FF
+				  loss = nn_ff_train_one(x, y);
+				  probability = nn_ff_predict(x);
+			  #endif
+
+			  uint8_t pred = (probability >= 0.5f) ? 1 : 0;
+			  uint8_t correct = (pred == y) ? 1 : 0;
+
+			  protocol_send_results(loss, probability, correct);
+		  }
+
+		  // Validation
+		  else if (protocol_is_inference_mode())
+		  {
+			  #if USE_BACKPROP
+				  probability = nn_predict(x);
+			  #endif
+
+			  #if USE_FF
+				  probability = nn_ff_predict(x);
+			  #endif
+
+			  uint8_t pred = (probability >= 0.5f) ? 1 : 0;
+			  uint8_t correct = (pred == y) ? 1 : 0;
+
+			  infer_total++;
+			  infer_correct += correct;
+		  }
+
+		  // Test
+		  else if (protocol_is_test_mode())
+		  {
+			  #if USE_BACKPROP
+				  probability = nn_predict(x);
+			  #endif
+
+			  #if USE_FF
+				  probability = nn_ff_predict(x);
+			  #endif
+
+			  uint8_t pred = (probability >= 0.5f) ? 1 : 0;
+
+			  uint8_t correct = (pred == y) ? 1 : 0;
+
+			  test_total++;
+			  test_correct += correct;
+
+			  protocol_send_test_prediction(probability, pred);
+
+
+		  }
+
+		  protocol_resume_requesting();
+	  }
+
+	  // Validation Finished
+	  if (protocol_is_infer_finished())
+	  {
+		  float acc = 0.0f;
+		  if (infer_total > 0) {
+			  acc = (float)infer_correct / (float)infer_total;
+		  }
+
+		  #if NN_SAVE_NEW_WEIGHTS_AFTER_TRAIN
+			  float old_acc = weights_flash_get_infer_acc();
+
+			  if (acc > old_acc) {
+				  weights_flash_set_infer_acc(acc);
+				  (void)weights_flash_save();
+			  }
+		  #endif
+
+		  protocol_send_inference_acc(acc);
+		  protocol_clear_infer_finished();
+
+		  infer_total = 0;
+		  infer_correct = 0;
+
+		  protocol_after_infer_processed();
+	  }
+
+	  // Test Finished
+	  if (protocol_is_test_finished())
+	  {
+		  float acc = 0.0f;
+		  if (test_total > 0) {
+			  acc = (float)test_correct / (float)test_total;
+		  }
+
+		  protocol_send_inference_acc(acc);
+
+		  test_total = 0;
+		  test_correct = 0;
+
+		  protocol_clear_test_finished();
+		  protocol_after_test_processed();
+	  }
+
+//	  HAL_GPIO_TogglePin(LED3_GPIO_PORT, LED3_PIN);
 
 	  if(sw1_flag){
 	    sw1_flag = 0;
@@ -194,8 +305,7 @@ int main(void)
 		  sw3_flag = 0;
 		  protocol_set_idle(0);
 	  }
-
-  }
+	}
   /* USER CODE END 3 */
 }
 

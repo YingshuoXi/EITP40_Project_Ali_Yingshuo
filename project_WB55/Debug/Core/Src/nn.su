@@ -1,7 +1,10 @@
-../Core/Src/nn.c:24:22:relu	16	static
-../Core/Src/nn.c:28:22:relu_grad	16	static
-../Core/Src/nn.c:33:22:sigmoid	40	static
-../Core/Src/nn.c:44:22:kaiming_init	24	static
-../Core/Src/nn.c:49:6:nn_init	56	static
-../Core/Src/nn.c:75:8:nn_predict	248	static
-../Core/Src/nn.c:99:8:nn_train_one	752	static
+../Core/Src/nn.c:24:21:relu	16	static
+../Core/Src/nn.c:28:21:relu_grad	16	static
+../Core/Src/nn.c:33:21:sigmoid	32	static
+../Core/Src/nn.c:44:21:kaiming_init	32	static
+../Core/Src/nn.c:49:6:nn_init	40	static
+../Core/Src/nn.c:75:7:nn_predict	280	static
+../Core/Src/nn.c:99:7:nn_train_one	856	static
+../Core/Src/nn.c:185:8:nn_state_size	4	static
+../Core/Src/nn.c:192:6:nn_state_export	24	static
+../Core/Src/nn.c:206:9:nn_state_import	24	static

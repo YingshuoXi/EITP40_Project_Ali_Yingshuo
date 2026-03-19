@@ -13,37 +13,37 @@ The dataset we used is [Data in Brief](https://www.sciencedirect.com/science/art
 
 ```
 |
-|   README.md <---------------------- ⭐ YOU ARE HERE
+|   README.md                      <- ⭐ YOU ARE HERE
 |
-+---Data  <-------------------------- The dataset
++---Data                           <- The dataset
 |   +---Bearing
 |   +---Healthy
 |   \---Propeller
 |
-+---pc <----------------------------- Python code, used for pc
-|       Process Results.ipynb <------ Plot Train/Validation process
-|       Result_BP.txt <-------------- Store the log file, which should be copied from the output of Send_Data_BP.ipynb
-|       Result_FF.txt <-------------- Same
-|       Send_Data_BP.ipynb <--------- Sending data from pc, which is used to communicate with STM32
-|       Send_Data_FF.ipynb <--------- Same
-|       Send_Data_Python.ipynb <----- Python Simulation, which mimics the same process of STM32
++---pc                             <- Python code, used for pc
+|       Process Results.ipynb      <- Plot Train/Validation process
+|       Result_BP.txt              <- Store the log file, which should be copied from the output of Send_Data_BP.ipynb
+|       Result_FF.txt              <- Same
+|       Send_Data_BP.ipynb         <- Sending data from pc, which is used to communicate with STM32
+|       Send_Data_FF.ipynb         <- Same
+|       Send_Data_Python.ipynb     <- Python Simulation, which mimics the same process of STM32
 |
-\---project_WB55 <------------------- C code, used for STM32
-    |   project_WB55.ioc <----------- UI interface, where you can change the connectivity, GPIO, baud rate, etc.
-    |   STM32WB55RGVX_FLASH.ld <----- Used to pre-allocate flash to store data permanently
+\---project_WB55                   <- C code, used for STM32
+    |   project_WB55.ioc           <- UI interface, where you can change the connectivity, GPIO, baud rate, etc.
+    |   STM32WB55RGVX_FLASH.ld     <- Used to pre-allocate flash to store data permanently
     |   STM32WB55RGVX_RAM.ld
     |
     \---Core
         +---Inc
-        |       config.h <----------- ⭐ IMPORTANT, here you can select the model, change the parameter, and choose the function.
+        |       config.h           <- ⭐ IMPORTANT, here you can select the model, change the parameter, and choose the function.
         |
         \---Src
                 main.c
-                nn.c <--------------- BP Model
-                nn_ff.c <------------ FF Model
-                protocol_uart.c <---- UART Protocol
-                save.c <------------- Move the input
-                weights_flash.c <---- Store/load the weights to flash
+                nn.c               <- BP Model
+                nn_ff.c            <- FF Model
+                protocol_uart.c    <- UART Protocol
+                save.c             <- Move the input
+                weights_flash.c    <- Store/load the weights to flash
 ```
 
 # How to use the current code

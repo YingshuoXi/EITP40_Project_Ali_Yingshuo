@@ -55,7 +55,8 @@ This work can demonstrate the feasibility of adaptive, privacy-preserving, and f
 1. Please check the [user manual](https://www.st.com/resource/en/user_manual/um2819-stm32wb-nucleo64-board-mb1355-stmicroelectronics.pdf) of NUCLEO-WB55RG
 
 physically remove the jump wires [13,14] [15,16]
-<img src="Appendix/User_Manual.png" width="40%">
+
+<img src="Appendix/User_Manual.png" width="60%">
 
 Connect the ST-link (pin 14, 16) to LPUART (pin A0, A1) as: 14 - A1, 16 - A0
 

@@ -9,11 +9,13 @@ Furthermore, we enable Bluetooth-based **federated learning**, allowing two devi
 This work can demonstrate the feasibility of adaptive, privacy-preserving, and fully distributed learning on embedded systems, advancing the development of next-generation intelligent edge devices. 
 
 # Repository Structure of the Main Files
+The dataset we used is [Data in Brief](https://www.sciencedirect.com/science/article/pii/S2352340923006698?via%3Dihub)
+
 ```
 |
 |   README.md <---------------------- ⭐ YOU ARE HERE
 |
-+---Data  <-------------------------- The dataset [Data in Brief](https://www.sciencedirect.com/science/article/pii/S2352340923006698?via%3Dihub)
++---Data  <-------------------------- The dataset
 |   +---Bearing
 |   +---Healthy
 |   \---Propeller

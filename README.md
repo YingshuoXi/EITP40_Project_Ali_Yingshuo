@@ -10,6 +10,7 @@ Furthermore, we enable Bluetooth-based **federated learning**, allowing two devi
 This work can demonstrate the feasibility of adaptive, privacy-preserving, and fully distributed learning on embedded systems, advancing the development of next-generation intelligent edge devices. 
 
 # Repository Structure of the Main Files
+```
 |
 |   README.md <---------------------- **YOU ARE HERE**
 |
@@ -48,6 +49,7 @@ This work can demonstrate the feasibility of adaptive, privacy-preserving, and f
                 protocol_uart.c <---- UART Protocol
                 save.c <------------- Move the input
                 weights_flash.c <---- Store/load the weights to flash
+```
 
 # How to use the current code
 1. Please check the [user manual](https://www.st.com/resource/en/user_manual/um2819-stm32wb-nucleo64-board-mb1355-stmicroelectronics.pdf) of NUCLEO-WB55RG

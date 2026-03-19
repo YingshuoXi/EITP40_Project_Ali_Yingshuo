@@ -1,5 +1,4 @@
 # EITP40_Project_Ali_Yingshuo
-EITP40 Final Project
 
 This project presents a decentralized edge AI system for binary classification implemented on the STM32.
 

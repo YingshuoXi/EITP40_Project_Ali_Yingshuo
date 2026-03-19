@@ -36,12 +36,6 @@ The dataset we used is [Data in Brief](https://www.sciencedirect.com/science/art
     \---Core
         +---Inc
         |       config.h <----------- ⭐ IMPORTANT, here you can select the model, change the parameter, and choose the function.
-        |       main.h
-        |       nn.h 
-        |       nn_ff.h
-        |       protocol_uart.h
-        |       save.h
-        |       weights_flash.h
         |
         \---Src
                 main.c

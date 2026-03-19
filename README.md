@@ -12,7 +12,7 @@ This work can demonstrate the feasibility of adaptive, privacy-preserving, and f
 # Repository Structure of the Main Files
 ```
 |
-|   README.md <---------------------- **YOU ARE HERE**
+|   README.md <---------------------- ⭐ YOU ARE HERE
 |
 +---Data  <-------------------------- The dataset [Data in Brief](https://www.sciencedirect.com/science/article/pii/S2352340923006698?via%3Dihub)
 |   +---Bearing
@@ -34,7 +34,7 @@ This work can demonstrate the feasibility of adaptive, privacy-preserving, and f
     |
     \---Core
         +---Inc
-        |       config.h <----------- IMPORTANT, here you can select the model, change the parameter, and choose the function.
+        |       config.h <----------- ⭐ IMPORTANT, here you can select the model, change the parameter, and choose the function.
         |       main.h
         |       nn.h 
         |       nn_ff.h

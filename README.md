@@ -20,7 +20,7 @@ The dataset we used is [Data in Brief](https://www.sciencedirect.com/science/art
 |   +---Healthy
 |   \---Propeller
 |
-+---pc <----------------------------- Python code, used in pc
++---pc <----------------------------- Python code, used for pc
 |       Process Results.ipynb <------ Plot Train/Validation process
 |       Result_BP.txt <-------------- Store the log file, which should be copied from the output of Send_Data_BP.ipynb
 |       Result_FF.txt <-------------- Same
@@ -28,7 +28,7 @@ The dataset we used is [Data in Brief](https://www.sciencedirect.com/science/art
 |       Send_Data_FF.ipynb <--------- Same
 |       Send_Data_Python.ipynb <----- Python Simulation, which mimics the same process of STM32
 |
-\---project_WB55
+\---project_WB55 <------------------- C code, used for STM32
     |   project_WB55.ioc <----------- UI interface, where you can change the connectivity, GPIO, baud rate, etc.
     |   STM32WB55RGVX_FLASH.ld <----- Used to pre-allocate flash to store data permanently
     |   STM32WB55RGVX_RAM.ld

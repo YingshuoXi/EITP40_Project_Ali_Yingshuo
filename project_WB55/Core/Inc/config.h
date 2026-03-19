@@ -15,7 +15,7 @@
 
 // Train - Validation - Train - Validation - Train ... Validation - Test
 // (Train + Validation) = 1 Epoch
-#define NN_EPOCHS   	15			// 0 = test only; suggested: 12 epochs
+#define NN_EPOCHS   	12			// 0 = test only; suggested: 12 epochs
 
 #define NN_IN			80
 #define NN_H1			40

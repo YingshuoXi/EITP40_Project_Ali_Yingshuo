@@ -1,0 +1,122 @@
+Ready. Waiting for STM32 requests...
+WinAcc(5000): 0.5882 | WinAvgLoss(5000): 0.692609
+Still waiting for requests...
+WinAcc(5000): 0.6340 | WinAvgLoss(5000): 0.657485
+WinAcc(5000): 0.6812 | WinAvgLoss(5000): 0.628383
+WinAcc(5000): 0.7016 | WinAvgLoss(5000): 0.616921
+WinAcc(5000): 0.7256 | WinAvgLoss(5000): 0.595198
+WinAcc(5000): 0.7444 | WinAvgLoss(5000): 0.572621
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.581350
+WinAcc(5000): 0.7730 | WinAvgLoss(5000): 0.531367
+WinAcc(5000): 0.7914 | WinAvgLoss(5000): 0.513732
+WinAcc(5000): 0.8210 | WinAvgLoss(5000): 0.478899
+WinAcc(5000): 0.8282 | WinAvgLoss(5000): 0.459765
+WinAcc(5000): 0.8434 | WinAvgLoss(5000): 0.436458
+WinAcc(5000): 0.8582 | WinAvgLoss(5000): 0.417255
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.645338
+WinAcc(5000): 0.8682 | WinAvgLoss(5000): 0.397464
+WinAcc(5000): 0.8766 | WinAvgLoss(5000): 0.387389
+WinAcc(5000): 0.8944 | WinAvgLoss(5000): 0.360558
+WinAcc(5000): 0.8940 | WinAvgLoss(5000): 0.351501
+WinAcc(5000): 0.9026 | WinAvgLoss(5000): 0.338452
+WinAcc(5000): 0.9066 | WinAvgLoss(5000): 0.321048
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.689109
+WinAcc(5000): 0.9106 | WinAvgLoss(5000): 0.316124
+WinAcc(5000): 0.9234 | WinAvgLoss(5000): 0.296789
+WinAcc(5000): 0.9350 | WinAvgLoss(5000): 0.275087
+WinAcc(5000): 0.9276 | WinAvgLoss(5000): 0.276453
+WinAcc(5000): 0.9348 | WinAvgLoss(5000): 0.272665
+WinAcc(5000): 0.9390 | WinAvgLoss(5000): 0.256528
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.719281
+WinAcc(5000): 0.9400 | WinAvgLoss(5000): 0.262068
+WinAcc(5000): 0.9442 | WinAvgLoss(5000): 0.241725
+WinAcc(5000): 0.9550 | WinAvgLoss(5000): 0.220906
+WinAcc(5000): 0.9526 | WinAvgLoss(5000): 0.232120
+WinAcc(5000): 0.9532 | WinAvgLoss(5000): 0.230225
+WinAcc(5000): 0.9556 | WinAvgLoss(5000): 0.213455
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.735430
+WinAcc(5000): 0.9568 | WinAvgLoss(5000): 0.225044
+WinAcc(5000): 0.9584 | WinAvgLoss(5000): 0.205903
+WinAcc(5000): 0.9674 | WinAvgLoss(5000): 0.184239
+WinAcc(5000): 0.9616 | WinAvgLoss(5000): 0.200950
+WinAcc(5000): 0.9654 | WinAvgLoss(5000): 0.198069
+WinAcc(5000): 0.9664 | WinAvgLoss(5000): 0.186138
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.747572
+WinAcc(5000): 0.9674 | WinAvgLoss(5000): 0.196844
+WinAcc(5000): 0.9668 | WinAvgLoss(5000): 0.179449
+WinAcc(5000): 0.9748 | WinAvgLoss(5000): 0.160676
+WinAcc(5000): 0.9724 | WinAvgLoss(5000): 0.176629
+WinAcc(5000): 0.9722 | WinAvgLoss(5000): 0.172944
+WinAcc(5000): 0.9748 | WinAvgLoss(5000): 0.165466
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.756617
+WinAcc(5000): 0.9724 | WinAvgLoss(5000): 0.174584
+WinAcc(5000): 0.9750 | WinAvgLoss(5000): 0.159402
+WinAcc(5000): 0.9792 | WinAvgLoss(5000): 0.144959
+WinAcc(5000): 0.9764 | WinAvgLoss(5000): 0.161194
+WinAcc(5000): 0.9768 | WinAvgLoss(5000): 0.155359
+WinAcc(5000): 0.9820 | WinAvgLoss(5000): 0.149910
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.761595
+WinAcc(5000): 0.9784 | WinAvgLoss(5000): 0.158093
+WinAcc(5000): 0.9788 | WinAvgLoss(5000): 0.148916
+WinAcc(5000): 0.9826 | WinAvgLoss(5000): 0.135442
+WinAcc(5000): 0.9804 | WinAvgLoss(5000): 0.147906
+WinAcc(5000): 0.9816 | WinAvgLoss(5000): 0.145263
+WinAcc(5000): 0.9840 | WinAvgLoss(5000): 0.136939
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.767545
+WinAcc(5000): 0.9826 | WinAvgLoss(5000): 0.144771
+WinAcc(5000): 0.9828 | WinAvgLoss(5000): 0.136976
+WinAcc(5000): 0.9866 | WinAvgLoss(5000): 0.126588
+WinAcc(5000): 0.9840 | WinAvgLoss(5000): 0.135202
+WinAcc(5000): 0.9840 | WinAvgLoss(5000): 0.132547
+WinAcc(5000): 0.9866 | WinAvgLoss(5000): 0.127674
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.769245
+WinAcc(5000): 0.9842 | WinAvgLoss(5000): 0.133121
+WinAcc(5000): 0.9842 | WinAvgLoss(5000): 0.133720
+WinAcc(5000): 0.9866 | WinAvgLoss(5000): 0.120557
+WinAcc(5000): 0.9848 | WinAvgLoss(5000): 0.128573
+WinAcc(5000): 0.9860 | WinAvgLoss(5000): 0.127437
+WinAcc(5000): 0.9888 | WinAvgLoss(5000): 0.117962
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.772341
+WinAcc(5000): 0.9860 | WinAvgLoss(5000): 0.123920
+WinAcc(5000): 0.9864 | WinAvgLoss(5000): 0.124826
+WinAcc(5000): 0.9882 | WinAvgLoss(5000): 0.112382
+WinAcc(5000): 0.9868 | WinAvgLoss(5000): 0.121537
+WinAcc(5000): 0.9886 | WinAvgLoss(5000): 0.120079
+WinAcc(5000): 0.9896 | WinAvgLoss(5000): 0.112486
+Training data finished at seq=30825, sent CODE_FINISH
+Inference data finished at seq=16472, sent CODE_FINISH
+Still waiting for requests...
+STM32 inference accuracy = 0.776651

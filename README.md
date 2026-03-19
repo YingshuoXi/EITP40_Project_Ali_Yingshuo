@@ -11,7 +11,7 @@ A bonus would be a 3-D printing frame to hold the cards (with handwritten number
 1. Please check the user manual of NUCLEO-WB55RG https://www.st.com/resource/en/user_manual/um2819-stm32wb-nucleo64-board-mb1355-stmicroelectronics.pdf
 
 physically remove the jump wires [13,14] [15,16]
-![alt text](image.png)
+![User Manual](Appendix/User_Manual.png)
 connet the ST-link (pin 14, 16) to LPUART (pin A0, A1) as:
 14 - A1, 16 - A0
 

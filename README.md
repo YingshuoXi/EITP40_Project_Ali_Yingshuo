@@ -65,3 +65,6 @@ LED1 (BLUE) toggle = DATA is being received
 SW1 press = shut down the Python process
 
 Please note that once you press SW1, the Python will be terminated, and you should manually run it again.
+
+# Report
+https://1drv.ms/w/c/52bb3df36e9a38be/IQA1VBkY6PB0SLsUnSXbtKVTARSByCukh_zsND6hP9Rhb18?e=FqqoeH
